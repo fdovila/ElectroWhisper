@@ -17,22 +17,6 @@ async function runWhisperCommand(args) {
     });
 }
 
-async function runWhisperCommand(args) {
-    const command = `whisper.cpp`;
-    return new Promise((resolve, reject) =& gt; {
-        execFile(command, args, (error, stdout, stderr) =& gt; {
-            if (error) {
-                reject(error);
-            } else {
-                resolve(stdout);
-            }
-        });
-    });
-}
-
-runWhisperCommand(['-h']).then(console.log).catch(console.error);
-</code >
-
 
     async function ValidateInputs(inputs) {
         let validInputs = true;

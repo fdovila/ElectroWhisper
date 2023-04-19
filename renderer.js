@@ -1,4 +1,4 @@
-const { exec } = require('child_process');
+const { dialog } = require('electron').remote;
 const fs = require('fs');
 const crypto = require('crypto');
 const childProcess = require('child_process');
@@ -7,7 +7,7 @@ const whisper_path = "C:\\tools\\whisperbin\\"
 async function runWhisperCommand(args) {
     const command = `${whisper_path}\\ggml-large.bin ${args.join(' ')}`;
     return new Promise((resolve, reject) => {
-        exec(command, (error, stdout, stderr) => {
+        childProcess.exec(command, (error, stdout, stderr) => {
             if (error) {
                 reject(error);
             } else {
@@ -17,25 +17,24 @@ async function runWhisperCommand(args) {
     });
 }
 
-
-    async function ValidateInputs(inputs) {
-        let validInputs = true;
-        if (!inputs.outputFormat) {
-            alert("Please select an output format");
-            validInputs = false;
-        } else if (!isSupportedOutputFormat(inputs.outputFormat)) {
-            alert("The selected output format is not supported by the Whisper CPP program");
-            validInputs = false;
-        }
-        return validInputs;
+async function ValidateInputs(inputs) {
+    let validInputs = true;
+    if (!inputs.outputFormat) {
+        alert("Please select an output format");
+        validInputs = false;
+    } else if (!isSupportedOutputFormat(inputs.outputFormat)) {
+        alert("The selected output format is not supported by the Whisper CPP program");
+        validInputs = false;
     }
+    return validInputs;
+}
 
 function isSupportedOutputFormat(outputFormat) {
     const supportedFormats = ['txt', 'json', 'csv', 'html', 'xml', 'srt', 'vtt'];
     return supportedFormats.includes(outputFormat);
 }
 
-async function transcribeAudio(username, filepath, count) {
+async function transcribeAudio(username, filepath, count, language) {
     const args = [
         '-i', filepath,
         '-o', 'txt',
@@ -46,20 +45,14 @@ async function transcribeAudio(username, filepath, count) {
         '-o', 'srt',
         '-o', 'vtt',
         '-u', username,
-        '-c', count
+        '-c', count,
+        '-l', language
     ];
     const options = {
         stdio: 'inherit',
         shell: true
     };
     await spawn('whisper', args, options);
-    ValidateInputs(inputs).then(validInputs => {
-        if (validInputs) {
-            transcribeAudio(username, filepath, count);
-        } else {
-            console.log('Invalid inputs');
-        }
-    });
 }
 
 async function saveTranscription(txt, count, username, filepath) {
@@ -126,11 +119,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameInput = document.getElementById('username');
     const filepathInput = document.getElementById('filepath');
     const countInput = document.getElementById('count');
+    const micSelect = document.getElementById('microphone-select');
+
+    // Add event listener for microphone select dropdown
+    navigator.mediaDevices.enumerateDevices()
+        .then(devices => {
+            const audioDevices = devices.filter(device => device.kind === 'audioinput');
+            for (const device of audioDevices) {
+                const option = document.createElement('option');
+                option.value = device.deviceId;
+                option.text = device.label || `Microphone ${micSelect.options.length + 1}`;
+                micSelect.add(option);
+            }
+        })
+        .catch(error => console.error(error));
 
     startTranscriptionBtn.addEventListener('click', async () => {
         const username = usernameInput.value;
         const filepath = filepathInput.value;
         const count = parseInt(countInput.value);
+        const deviceId = micSelect.value;
 
         if (isNaN(count) || count < 1) {
             alert('Invalid count value');
@@ -149,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (validInputs) {
             try {
-                await transcribeAudio(username, filepath, count);
+                await transcribeAudio(username, filepath, count, deviceId);
                 const transcriptionFile = `${filepath}/log_${count}.txt`;
                 await DisplayTranscription(transcriptionFile);
                 await saveTranscription(transcriptionFile, count, username, filepath);

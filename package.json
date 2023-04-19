@@ -1,0 +1,16 @@
+{
+  "name": "known-road-add-ig93u",
+  "productName": "known-road-add-ig93u",
+  "description": "My Electron application description",
+  "keywords": [],
+  "main": "./main.js",
+  "version": "1.0.0",
+  "author": "favil",
+  "scripts": {
+    "start": "electron ."
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "23.2.0"
+  }
+}

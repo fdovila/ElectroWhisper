@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Whisper CPP GUI</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <div id="main-container">
+        <h1>Whisper CPP GUI</h1>
+
+        <!-- File to transcribe -->
+        <label for="file-input">File to transcribe:</label>
+        <input type="file" id="file-input" accept="audio/*,video/*">
+
+        <!-- GGML model -->
+        <label for="model-input">GGML model (.bin):</label>
+        <input type="file" id="model-input">
+
+        <!-- Language selection -->
+        <label for="language-select">Language:</label>
+        <select id="language-select">
+            <!-- Add <option> elements for each language here -->
+        </select>
+
+        <!-- Translate checkbox -->
+        <label for="translate-checkbox">Translate to English:</label>
+        <input type="checkbox" id="translate-checkbox">
+
+        <!-- Output formats checkboxes -->
+        <label for="output-txt-checkbox">Output as .txt:</label>
+        <input type="checkbox" id="output-txt-checkbox">
+
+        <label for="output-srt-checkbox">Output as .srt:</label>
+        <input type="checkbox" id="output-srt-checkbox">
+
+        <label for="output-vtt-checkbox">Output as .vtt:</label>
+        <input type="checkbox" id="output-vtt-checkbox">
+
+        <!-- Speed up options -->
+        <label for="speed-up-checkbox">Speed up audio by 2x:</label>
+        <input type="checkbox" id="speed-up-checkbox">
+
+        <label for="speed-up-factor">Speed up factor:</label>
+        <input type="number" id="speed-up-factor" min="1" step="0.1">
+
+        <!-- Additional parameters -->
+        <label for="other-params">Other parameters:</label>
+        <input type="text" id="other-params">
+
+        <!-- Transcribe button -->
+        <button id="transcribe-btn">Transcribe</button>
+
+        <!-- Transcription results -->
+        <h2>Transcription Results:</h2>
+        <div id="transcription-results">
+            <!-- Transcription results will be displayed here -->
+        </div>
+    </div>
+
+    <script src="preload.js"></script>
+    <script src="renderer.js"></script>
+</body>
+</html>
